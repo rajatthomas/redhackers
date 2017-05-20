@@ -46,7 +46,7 @@ def calculate_weighted_by_distance(df, column_names, average_according_to='mean_
     elevations = np.zeros(column_names.size)
 
     for i, column in enumerate(column_names):
-        id_province = df[column].values.astype(np.bool)
+        id_province = (df.admin_L3_name == column).values
         idx_first = np.argmax(id_province)
         coord[i] = df.loc[idx_first, ['x_pos', 'y_pos']].values.astype(np.float)
         elevations[i] = df.loc[idx_first, average_according_to]
@@ -58,7 +58,7 @@ def calculate_weighted_by_distance(df, column_names, average_according_to='mean_
     dist_prov /= dist_prov.max()
 
     for i, column in enumerate(column_names):
-        id_province = df[column].values.astype(np.bool)
+        id_province = (df.admin_L3_name == column).values
         idx_excluding_prov = np.delete(np.arange(column_names.size), i)
         dist_to_prov = dist_prov[i, idx_excluding_prov]
         elev_other = elevations[idx_excluding_prov]
@@ -73,11 +73,11 @@ def run(**kwargs):
     df_data = pd.read_csv(path_data)
 
     # province names
-    onehot_data, classes, encoders = one_hot_encode(df_data.admin_L3_name.values)
-    df_onehot = pd.DataFrame(data=onehot_data, columns=classes)
-    del df_data['admin_L3_name']
-    df_data = pd.concat((df_data, df_onehot), axis=1)
-    df_data, df_coord = calculate_weighted_by_distance(df_data, classes)
+    # onehot_data, classes, encoders = one_hot_encode(df_data.admin_L3_name.values)
+    # df_onehot = pd.DataFrame(data=onehot_data, columns=classes)
+    # del df_data['admin_L3_name']
+    # df_data = pd.concat((df_data, df_onehot), axis=1)
+    df_data, df_coord = calculate_weighted_by_distance(df_data, df_data.admin_L3_name.unique())
 
     make_plots(df_data)
 
