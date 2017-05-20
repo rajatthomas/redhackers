@@ -78,6 +78,9 @@ def run(**kwargs):
     # del df_data['admin_L3_name']
     # df_data = pd.concat((df_data, df_onehot), axis=1)
     df_data, df_coord = calculate_weighted_by_distance(df_data, df_data.admin_L3_name.unique())
+    df_data, df_coord = calculate_weighted_by_distance(df_data, df_data.admin_L3_name.unique(),
+                                                       average_according_to='Rainfallme',
+                                                       new_feature='weighted_rain')
 
     make_plots(df_data)
 
